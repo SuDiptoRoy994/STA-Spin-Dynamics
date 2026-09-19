@@ -72,7 +72,7 @@ STA-Spin-Dynamics/
 
 ### Day 1 — Larmor Precession and Relaxation
 
-![Day 1](figures/day1_larmor_precession.png)
+![Day 1](day1_larmor_precession.png)
 
 A spin tipped 90° into the transverse plane precesses at the off-resonance frequency (100 Hz) while Mx, My decay with T₂ = 80 ms and Mz recovers with T₁ = 1.5 s. The FID envelope matches the analytical e⁻ᵗ/T₂ curve to 4 decimal places — verifying solver accuracy.
 
@@ -80,7 +80,7 @@ A spin tipped 90° into the transverse plane precesses at the off-resonance freq
 
 ### Day 2 — Hard π Pulse: On-Resonance vs Off-Resonance
 
-![Day 2](figures/day2_hard_pulse.png)
+![Day 2](day2_hard_pulse.png)
 
 A rectangular π pulse (τ = 0.5 ms, Ω₀ = 1 kHz) achieves near-perfect inversion on-resonance (Mz = −0.997) but fails rapidly off-resonance. At ±1 kHz offset, Mz becomes positive — complete inversion failure. This is the fundamental limitation motivating adiabatic and STA approaches.
 
@@ -88,7 +88,7 @@ A rectangular π pulse (τ = 0.5 ms, Ω₀ = 1 kHz) achieves near-perfect invers
 
 ### Day 3 — Adiabatic Pulse and the Adiabatic Condition
 
-![Day 3](figures/day3_adiabatic_pulse.png)
+![Day 3](day3_adiabatic_pulse.png)
 
 The linear-chirp adiabatic pulse succeeds when the **adiabatic condition** is satisfied:
 
