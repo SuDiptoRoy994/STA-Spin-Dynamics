@@ -105,7 +105,7 @@ The slow pulse achieves broad bandwidth (robust across ±3 kHz). The fast pulse 
 
 ### Day 4 — Shortcuts to Adiabaticity: Counterdiabatic Driving
 
-![Day 4](figures/day4_sta_cd_driving.png)
+![Day 4](day4_sta_cd_driving.png)
 
 The CD correction term for a linear-chirp sweep is derived analytically:
 
