@@ -1,180 +1,108 @@
-# 🧲 STA-Spin-Dynamics
+<div align="center">
 
-**Bloch Equation Simulations: Shortcuts to Adiabaticity for MRI RF Pulse Design**
+# ⚡ STA Spin Dynamics
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![NumPy](https://img.shields.io/badge/NumPy-1.24%2B-013243?style=flat&logo=numpy&logoColor=white)](https://numpy.org/)
-[![SciPy](https://img.shields.io/badge/SciPy-1.10%2B-8CAAE6?style=flat&logo=scipy&logoColor=white)](https://scipy.org/)
-[![Matplotlib](https://img.shields.io/badge/Matplotlib-3.7%2B-11557C?style=flat)](https://matplotlib.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+### Counterdiabatic Shortcuts to Adiabaticity for Rapid MRI Spin Inversion
 
----
+*Dissipative Bloch-equation simulations · robustness studies · RF control cost*
 
-## Overview
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-%E2%89%A51.26-013243?logo=numpy)
+![SciPy](https://img.shields.io/badge/SciPy-%E2%89%A51.12-8CAAE6?logo=scipy&logoColor=white)
+![Status](https://img.shields.io/badge/status-active%20research-brightgreen)
 
-This project simulates nuclear spin dynamics under MRI radiofrequency (RF) pulses, building progressively from basic Larmor precession to a full demonstration of **Shortcuts to Adiabaticity (STA)** via counterdiabatic (CD) driving.
-
-**The central problem:** Conventional adiabatic RF pulses face a fundamental contradiction in biological tissue. Slowing the pulse to satisfy the adiabatic condition increases the duration of noise exposure, degrading fidelity through T₂ relaxation. Making the pulse fast violates the adiabatic condition, causing diabatic transitions that collapse inversion fidelity.
-
-**The STA solution:** Counterdiabatic driving adds an analytically derived quadrature component ω_y(t) to the standard RF waveform. This exactly cancels diabatic transitions by construction — restoring high-fidelity inversion at fast timescales, with no exotic hardware required.
-
-> This simulation supports the accompanying review paper:  
-> *"Can Shortcuts to Adiabaticity Overcome the Speed–Fidelity Trade-off in Neural Stimulation fMRI?"*  
-> — Sudipto Roy (2025, manuscript in preparation)
+</div>
 
 ---
 
-## Physical Model
+## 🔬 Overview
 
-A spin-½ nucleus in the rotating frame, with T₁/T₂ relaxation representing biological tissue:
+This repository tests whether a **counterdiabatic (CD) shortcut-to-adiabaticity** pulse can invert spins in milliseconds, instead of the slow chirped adiabatic pulses used in MRI, while keeping high fidelity under relaxation and field imperfections.
 
-$$\frac{dM_x}{dt} = \delta(t)\,M_y - \omega_y(t)\,M_z - \frac{M_x}{T_2}$$
+**Common model:** rotating-frame Bloch equations, T1 = 1.5 s, T2 = 80 ms, linear chirp, CD term ω_y = −dθ/dt, solved with `scipy.integrate.solve_ivp`.
 
-$$\frac{dM_y}{dt} = -\delta(t)\,M_x + \omega_x(t)\,M_z - \frac{M_y}{T_2}$$
+**Headline result (2 ms pulse):** Mz = −0.988 (STA/CD) vs −0.603 (conventional chirp).
 
-$$\frac{dM_z}{dt} = \omega_y(t)\,M_x - \omega_x(t)\,M_y - \frac{M_z - M_0}{T_1}$$
+## 🗂️ Repository structure
 
-| Parameter | Value | Meaning |
-|-----------|-------|---------|
-| T₁ | 1.500 s | Longitudinal relaxation — grey matter, 3T |
-| T₂ | 0.080 s | Transverse relaxation — grey matter, 3T |
-| Ω₀ | 2π × 1000 rad/s | Rabi (RF) frequency |
-| Δ_max | 2π × 5000 rad/s | Chirp sweep range |
-| τ_slow | 20 ms | Slow adiabatic pulse duration |
-| τ_fast | 2 ms | Fast pulse duration (STA target) |
-
----
-
-## Repository Structure
-
-```
+```text
 STA-Spin-Dynamics/
-│
-├── day1_larmor_precession.py   ← Spin precession, T1/T2 relaxation, FID
-├── day2_hard_pulse.py          ← Rectangular π pulse and off-resonance failure
-├── day3_adiabatic_pulse.py     ← Linear-chirp adiabatic pulse, adiabatic condition
-├── day4_sta_cd_driving.py      ← STA counterdiabatic driving — the main result
-│
-├── figures/                    ← Output figures (auto-generated on run)
-│   ├── day1_larmor_precession.png
-│   ├── day2_hard_pulse.png
-│   ├── day3_adiabatic_pulse.png
-│   └── day4_sta_cd_driving.png
-│
+├── scripts/      # simulation code (common_model.py + 01–10)
+├── results/      # CSV outputs
+├── figures/      # publication-style PNG figures
+├── docs/         # usage guide, validation report, detailed README
 ├── requirements.txt
-├── LICENSE
 └── README.md
 ```
 
----
+## 🧪 Simulations
 
-## Simulation Results
+| Tier | Script | Question | Figure |
+|---|---|---|---|
+| 2 | `01_off_resonance_sweep.py` | Fixed 2 ms pulse vs static offset? | `figure_T2_off_resonance_2ms.png` |
+| 2 | `02_T2_sensitivity.py` | Does the conclusion survive T2 changes? | `figure_T2_T2_sensitivity.png` |
+| 2 | `03_T1_sensitivity.py` | Sensitivity to T1 | `figure_T2_T1_sensitivity.png` |
+| 2 | `04_closed_vs_dissipative.py` | Nonadiabatic loss vs relaxation loss | `figure_T2_closed_vs_dissipative.png` |
+| 2 | `05_numerical_convergence.py` | Are results numerical artifacts? | `figure_T2_numerical_convergence.png` |
+| 3 | `06_B1_offresonance_map.py` | Joint B1 / offset robustness map | `figure_T3_*_B1_offresonance.png` |
+| 3 | `07_rf_control_cost.py` | Control cost paid for the speed gain | `figure_T3_control_cost.png` |
+| 3 | `08_speed_performance_cost.py` | Speed vs fidelity vs cost summary | `figure_T3_speed_performance_cost.png` |
+| 4 | `09_sta_ensemble_parameter_optimization.py` | Ensemble-aware parameter optimization (prototype) | exploratory |
+| 4 | `10_bloch_vs_lindblad.py` | Bloch vs density-matrix Lindblad check | `figure_T4_bloch_vs_lindblad.png` |
 
-### Day 1 — Larmor Precession and Relaxation
+## 🖼️ Selected figures
 
-![Day 1](day1_larmor_precession.png)
+<p align="center">
+  <img src="figures/figure_T3_speed_performance_cost.png" width="45%">
+  <img src="figures/figure_T2_off_resonance_2ms.png" width="45%">
+</p>
+<p align="center">
+  <img src="figures/figure_T3_STA_minus_conventional.png" width="45%">
+  <img src="figures/figure_T4_bloch_vs_lindblad.png" width="45%">
+</p>
 
-A spin tipped 90° into the transverse plane precesses at the off-resonance frequency (100 Hz) while Mx, My decay with T₂ = 80 ms and Mz recovers with T₁ = 1.5 s. The FID envelope matches the analytical e⁻ᵗ/T₂ curve to 4 decimal places — verifying solver accuracy.
+## 🚀 Quick start
 
----
-
-### Day 2 — Hard π Pulse: On-Resonance vs Off-Resonance
-
-![Day 2](day2_hard_pulse.png)
-
-A rectangular π pulse (τ = 0.5 ms, Ω₀ = 1 kHz) achieves near-perfect inversion on-resonance (Mz = −0.997) but fails rapidly off-resonance. At ±1 kHz offset, Mz becomes positive — complete inversion failure. This is the fundamental limitation motivating adiabatic and STA approaches.
-
----
-
-### Day 3 — Adiabatic Pulse and the Adiabatic Condition
-
-![Day 3](day3_adiabatic_pulse.png)
-
-The linear-chirp adiabatic pulse succeeds when the **adiabatic condition** is satisfied:
-
-$$\left|\frac{d\theta}{dt}\right| \ll \omega_\text{eff}, \quad \theta(t) = \arctan\!\left(\frac{\Omega_0}{\delta(t)}\right)$$
-
-| Pulse | τ | Adiabaticity ratio | Final M_z |
-|-------|---|--------------------|-----------|
-| Slow  | 20 ms | 0.080 ✓ satisfied | −0.911 |
-| Fast  | 2 ms  | 0.796 ✗ **violated** | −0.603 |
-
-The slow pulse achieves broad bandwidth (robust across ±3 kHz). The fast pulse is both low-fidelity and bandwidth-limited. This is the **adiabatic paradox** that STA resolves.
-
----
-
-### Day 4 — Shortcuts to Adiabaticity: Counterdiabatic Driving
-
-![Day 4](day4_sta_cd_driving.png)
-
-The CD correction term for a linear-chirp sweep is derived analytically:
-
-$$\omega_y(t) = -\frac{d\theta}{dt} = -\frac{2\,\Omega_0\,\Delta_\text{max}}{\tau\,\bigl(\delta(t)^2 + \Omega_0^2\bigr)}$$
-
-This is implemented as a phase-modulated quadrature component of the existing RF channel — **no exotic hardware required**, compatible with standard clinical MRI scanners.
-
-#### Key Result
-
-| Pulse | Duration | Final M_z | Fidelity |
-|-------|----------|-----------|----------|
-| Slow adiabatic | 20 ms | −0.911 | Limited by T₂ decay |
-| Fast conventional | 2 ms | −0.603 | ✗ Diabatic failure |
-| **Fast STA/CD** | **2 ms** | **−0.988** | **✓ Near-perfect** |
-
-**The STA pulse achieves a 10× speed-up while matching the fidelity of the slow adiabatic pulse.**
-
-#### B₁ Robustness
-
-Across ±20% B₁ field variation (realistic for clinical scanners):
-
-| Pulse | Mean Final M_z | Std Dev |
-|-------|----------------|---------|
-| Slow adiabatic | −0.908 | 0.009 |
-| Fast conventional | −0.588 | 0.037 |
-| **Fast STA/CD** | **−0.986** | **0.004** |
-
-STA is both faster and more robust to hardware imperfections than the conventional fast pulse.
-
----
-
-## How to Run
-
-**1. Install dependencies**
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/SuDiptoRoy994/STA-Spin-Dynamics.git
+cd STA-Spin-Dynamics
+python -m pip install -r requirements.txt
+python scripts/01_off_resonance_sweep.py
 ```
 
-**2. Run each simulation**
-```bash
-python day1_larmor_precession.py
-python day2_hard_pulse.py
-python day3_adiabatic_pulse.py
-python day4_sta_cd_driving.py
+Run scripts `01 → 10` in order. Larger maps: set `STA_B1_POINTS` and `STA_OFF_POINTS`.
+
+## ⚠️ Honest limitations
+
+- Single effective spin-1/2 with phenomenological T1/T2 (no spatial or multi-pool effects).
+- Robustness tests use a **fixed nominal pulse**; the CD waveform is not redesigned per perturbation.
+- `J_RF` is a control-cost proxy, **not SAR**.
+- Script `09` is an exploratory prototype, not a validated result.
+- Simulation only; no experimental validation.
+
+See [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) for what was executed and verified.
+
+## 📄 Related work
+
+- Simulation manuscript: *Counterdiabatic Shortcuts to Adiabaticity for Rapid MRI Spin Inversion: A Dissipative Bloch-Equation Simulation Study*
+- Perspective: *The Adiabatic Paradox in Biological Tissue*
+
+## 👤 Author
+
+**Sudipto Roy (Dipto)** · M.S. Applied Physics & Electronics, Jahangirnagar University
+Interests: medical & biomedical physics · plasma · quantum control
+
+## 📜 License
+
+Add a `LICENSE` file (MIT recommended for code) before making the repo public.
+
+## 📚 Citation
+
+```bibtex
+@software{roy_sta_spin_dynamics,
+  author = {Roy, Sudipto},
+  title  = {STA-Spin-Dynamics: Counterdiabatic spin inversion simulations},
+  year   = {2026},
+  url    = {https://github.com/SuDiptoRoy994/STA-Spin-Dynamics}
+}
 ```
-
-Each script saves its figure to `figures/` and prints self-verification values to the terminal.
-
-> **Note:** Scripts must be run from inside the `STA-Spin-Dynamics/` directory so the `figures/` subfolder path resolves correctly.
-
----
-
-## The Physics Argument in One Paragraph
-
-In fMRI applications involving neural stimulation (TMS-fMRI, DBS-fMRI), RF pulse duration directly determines the contamination of BOLD signal by stimulation artifacts. Shorter pulses reduce artifact overlap windows — but conventional adiabatic pulses cannot be shortened without violating the adiabatic condition and losing inversion fidelity. Counterdiabatic driving sidesteps this contradiction entirely: by adding a quadrature RF component whose time dependence is dictated by the geometry of the instantaneous Hamiltonian eigenstate, diabatic transitions are cancelled by construction rather than by slowing the pulse. The simulation here provides a direct numerical demonstration of this principle using a realistic biological tissue model (grey matter, 3T MRI).
-
----
-
-## Author
-
-**Sudipto Roy**  
-MSc in Applied Physics and Electronics  
-Jahangirnagar University, Bangladesh  
-Research interests: medical physics, MRI pulse design, quantum control  
-📧 diptoroy994@gmail.com  
-🐙 [github.com/SuDiptoRoy994](https://github.com/SuDiptoRoy994)
-
----
-
-## License
-
-MIT — see [LICENSE](LICENSE)
